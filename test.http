@@ -1,0 +1,221 @@
+@baseUrl = http://127.0.0.1:8000/api/v1
+
+# To be updated after Login
+@token = 
+@courseId = 
+@lectureId = 
+
+
+### =====================================================
+### AUTHENTICATION
+### =====================================================
+
+### Signup
+POST {{baseUrl}}/auth/signup
+Content-Type: application/json
+
+{
+    "name": "Swagat",
+    "email": "swagat_test@example.com",
+    "password": "Test@12345"
+}
+
+
+### Login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "sam@gmail.com",
+    "password": "sam12345"
+}
+
+
+### =====================================================
+### USERS
+### =====================================================
+
+### Get Current User
+GET {{baseUrl}}/users/me
+Authorization: Bearer {{token}}
+
+
+### =====================================================
+### COURSES
+### =====================================================
+
+### Create Course
+POST {{baseUrl}}/courses
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "title": "Natural Language Processing",
+    "description": "NLP fundamentals and applications"
+}
+
+
+### Get My Courses
+GET {{baseUrl}}/courses
+Authorization: Bearer {{token}}
+
+
+### Get Single Course
+GET {{baseUrl}}/courses/{{courseId}}
+Authorization: Bearer {{token}}
+
+
+### Update Course
+PUT {{baseUrl}}/courses/{{courseId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "title": "Natural Language Processing",
+    "description": "Advanced NLP concepts and applications"
+}
+
+
+### Delete Course
+DELETE {{baseUrl}}/courses/{{courseId}}
+Authorization: Bearer {{token}}
+
+
+### =====================================================
+### LECTURES
+### =====================================================
+
+### Upload Lecture PDF
+POST {{baseUrl}}/courses/{{courseId}}/lectures
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=LectureBoundary
+
+--LectureBoundary
+Content-Disposition: form-data; name="title"
+
+Introduction to Natural Language Processing
+--LectureBoundary
+Content-Disposition: form-data; name="file"; filename="lecture1.pdf"
+Content-Type: application/pdf
+
+< C:\Users\swaga\Desktop\Ai_GEN_resume.pdf
+--LectureBoundary--
+
+
+### Get Lectures For Course
+GET {{baseUrl}}/courses/{{courseId}}/lectures
+Authorization: Bearer {{token}}
+
+
+### Get Single Lecture
+GET {{baseUrl}}/lectures/{{lectureId}}
+Authorization: Bearer {{token}}
+
+
+### Delete Lecture
+DELETE {{baseUrl}}/lectures/{{lectureId}}
+Authorization: Bearer {{token}}
+
+
+### Generate Lecture Summary
+
+POST {{baseUrl}}/courses/{{courseId}}/lectures/{{lectureId}}/summarize
+Authorization: Bearer {{token}}
+
+
+### Generate Quiz
+
+POST {{baseUrl}}/courses/{{courseId}}/lectures/{{lectureId}}/quiz
+Authorization: Bearer {{token}}
+
+
+### Generate Flashcards
+
+POST {{baseUrl}}/courses/{{courseId}}/lectures/{{lectureId}}/flashcards
+Authorization: Bearer {{token}}
+
+
+### Create Study Plan
+
+POST {{baseUrl}}/courses/{{courseId}}/study-plans
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "duration_days": 7
+}
+
+
+### Chat With Lecture
+
+POST {{baseUrl}}/courses/{{courseId}}/chat
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "message": "What is Natural Language Processing?"
+}
+
+
+### Get Chat History
+
+GET {{baseUrl}}/courses/{{courseId}}/chat
+Authorization: Bearer {{token}}
+
+### Another Chat Question
+
+POST {{baseUrl}}/courses/{{courseId}}/chat
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "message": "What is tokenization?"
+}
+
+
+
+
+### Chat Question 1
+
+POST {{baseUrl}}/courses/{{courseId}}/chat
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "message": "What is Natural Language Processing?"
+}
+
+
+### Get Chat History
+
+GET {{baseUrl}}/courses/{{courseId}}/chat
+Authorization: Bearer {{token}}
+
+
+### Chat Question 2
+
+POST {{baseUrl}}/courses/{{courseId}}/chat
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "message": "What is tokenization?"
+}
+
+
+### Get Chat History Again
+
+GET {{baseUrl}}/courses/{{courseId}}/chat
+Authorization: Bearer {{token}}
+
+
+### Invalid Lecture ID
+
+GET {{baseUrl}}/courses/{{courseId}}/lectures/abc
+Authorization: Bearer {{token}}
+
+
+### Get All Lectures
+
+GET {{baseUrl}}/courses/{{courseId}}/lectures
+Authorization: Bearer {{token}}
