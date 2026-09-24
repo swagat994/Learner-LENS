@@ -1,50 +1,89 @@
-import json
+from typing import TypedDict
 
-from src.ai.ollama_client import generate_response
+from pydantic import BaseModel
+
+from langgraph.graph import StateGraph, START, END
+
+from src.ai.langchain_llm import llm
 
 
-async def generate_study_plan(
-    text: str,
-    duration_days: int,
+class StudyDay(BaseModel):
+    day: int
+    topics: list[str]
+    tasks: list[str]
+
+
+class StudyPlan(BaseModel):
+    plan: list[StudyDay]
+
+
+class StudyPlanState(TypedDict):
+    text: str
+    duration_days: int
+    plan: dict
+
+
+plan_llm = llm.with_structured_output(StudyPlan)
+
+
+async def generate_plan_node(
+    state: StudyPlanState,
 ):
-    prompt = f"""
-You are an expert academic study planner.
 
-Create a {duration_days}-day study plan based ONLY
-on the lecture material below.
+    prompt = f"""
+Create a {state["duration_days"]}-day study plan
+based ONLY on the lecture material below.
 
 For each day provide:
 - day number
 - topics to study
 - specific study tasks
 
-Make the plan realistic for a college student.
-
-Return ONLY valid JSON.
-
-Use exactly this format:
-
-{{
-    "plan": [
-        {{
-            "day": 1,
-            "topics": [
-                "Topic 1",
-                "Topic 2"
-            ],
-            "tasks": [
-                "Task 1",
-                "Task 2"
-            ]
-        }}
-    ]
-}}
+Make it realistic for a college student.
 
 Lecture material:
 
-{text}
+{state["text"]}
 """
 
-    response = await generate_response(prompt)
+    result = await plan_llm.ainvoke(prompt)
 
-    return json.loads(response)
+    return {
+        "plan": result.model_dump()
+    }
+
+
+builder = StateGraph(StudyPlanState)
+
+builder.add_node(
+    "generate_plan",
+    generate_plan_node,
+)
+
+builder.add_edge(
+    START,
+    "generate_plan",
+)
+
+builder.add_edge(
+    "generate_plan",
+    END,
+)
+
+study_plan_graph = builder.compile()
+
+
+async def generate_study_plan(
+    text: str,
+    duration_days: int,
+):
+
+    result = await study_plan_graph.ainvoke(
+        {
+            "text": text,
+            "duration_days": duration_days,
+            "plan": {},
+        }
+    )
+
+    return result["plan"]

@@ -1,13 +1,15 @@
-from src.ai.ollama_client import generate_response
+from src.ai.langchain_llm import llm
 from src.utils.text import chunk_text
 
 
 async def summarize_text(text: str) -> str:
+
     chunks = chunk_text(text)
 
     summaries = []
 
     for chunk in chunks:
+
         prompt = f"""
 You are an expert academic assistant.
 
@@ -25,9 +27,9 @@ Lecture material:
 {chunk}
 """
 
-        summary = await generate_response(prompt)
+        response = await llm.ainvoke(prompt)
 
-        summaries.append(summary)
+        summaries.append(response.content)
 
     if len(summaries) == 1:
         return summaries[0]
@@ -37,15 +39,13 @@ Lecture material:
     final_prompt = f"""
 You are an expert academic assistant.
 
-The following are summaries of different sections
-of the same lecture.
-
-Combine them into ONE coherent study summary.
+Combine these section summaries into ONE coherent
+study summary.
 
 Requirements:
 - Remove repetition.
 - Preserve important concepts.
-- Organize the material logically.
+- Organize logically.
 - Use headings and bullet points.
 - Make it useful for exam revision.
 - Do not invent information.
@@ -55,4 +55,6 @@ Section summaries:
 {combined}
 """
 
-    return await generate_response(final_prompt)
+    response = await llm.ainvoke(final_prompt)
+
+    return response.content

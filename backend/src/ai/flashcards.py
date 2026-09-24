@@ -1,44 +1,42 @@
-import json
+from pydantic import BaseModel
 
-from src.ai.ollama_client import generate_response
+from src.ai.langchain_llm import llm
+
+
+class Flashcard(BaseModel):
+    question: str
+    answer: str
+
+
+class FlashcardSet(BaseModel):
+    flashcards: list[Flashcard]
+
+
+flashcard_llm = llm.with_structured_output(
+    FlashcardSet
+)
 
 
 async def generate_flashcards(text: str):
+
     prompt = f"""
 You are an expert academic study assistant.
 
-Create 10 useful flashcards based ONLY on the lecture
-material below.
-
-Each flashcard must contain:
-- question
-- answer
+Create exactly 10 useful flashcards based ONLY
+on the lecture material.
 
 Focus on:
 - important concepts
 - definitions
 - key facts
 - technical terminology
-- concepts useful for exams
-
-Return ONLY valid JSON.
-
-Use exactly this format:
-
-{{
-    "flashcards": [
-        {{
-            "question": "What is ...?",
-            "answer": "..."
-        }}
-    ]
-}}
+- exam-relevant concepts
 
 Lecture material:
 
 {text}
 """
 
-    response = await generate_response(prompt)
+    result = await flashcard_llm.ainvoke(prompt)
 
-    return json.loads(response)
+    return result.model_dump()

@@ -1,46 +1,43 @@
-import json
+from pydantic import BaseModel, Field
 
-from src.ai.ollama_client import generate_response
+from src.ai.langchain_llm import llm
+
+
+class QuizQuestion(BaseModel):
+    question: str
+    options: list[str] = Field(
+        min_length=4,
+        max_length=4,
+    )
+    answer: str
+    explanation: str
+
+
+class Quiz(BaseModel):
+    questions: list[QuizQuestion]
+
+
+quiz_llm = llm.with_structured_output(Quiz)
 
 
 async def generate_quiz(text: str):
+
     prompt = f"""
 You are an expert college-level quiz creator.
 
-Create 5 multiple-choice questions based ONLY on the
-lecture material below.
+Create exactly 5 multiple-choice questions based ONLY
+on the lecture material below.
 
-For every question provide:
-- question
+Each question must have:
 - exactly 4 options
-- correct answer
-- short explanation
-
-Return ONLY valid JSON.
-
-Use exactly this format:
-
-{{
-    "questions": [
-        {{
-            "question": "Question text",
-            "options": [
-                "Option A",
-                "Option B",
-                "Option C",
-                "Option D"
-            ],
-            "answer": "Option A",
-            "explanation": "Why this is correct"
-        }}
-    ]
-}}
+- one correct answer
+- a short explanation
 
 Lecture material:
 
 {text}
 """
 
-    response = await generate_response(prompt)
+    result = await quiz_llm.ainvoke(prompt)
 
-    return json.loads(response)
+    return result.model_dump()

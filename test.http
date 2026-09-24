@@ -1,9 +1,9 @@
 @baseUrl = http://127.0.0.1:8000/api/v1
 
 # To be updated after Login
-@token = 
-@courseId = 
-@lectureId = 
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2YTcyNTIxNTdkODk2MDM5YjAzOTJhMGEiLCJleHAiOjE3OTAyNTM3NTF9.OMcmxQTrzl2bNA7Y1Fz-7ufPLLz4kNtfIgknFsJiSiY
+@courseId = 6ab5141deb236fa2d16fb0fa
+@lectureId = 6ab5155beb236fa2d16fb0fc
 
 
 ### =====================================================
@@ -50,7 +50,7 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-    "title": "Natural Language Processing",
+    "title": "Corpus",
     "description": "NLP fundamentals and applications"
 }
 
@@ -93,12 +93,12 @@ Content-Type: multipart/form-data; boundary=LectureBoundary
 --LectureBoundary
 Content-Disposition: form-data; name="title"
 
-Introduction to Natural Language Processing
+Corpus
 --LectureBoundary
 Content-Disposition: form-data; name="file"; filename="lecture1.pdf"
 Content-Type: application/pdf
 
-< C:\Users\swaga\Desktop\Ai_GEN_resume.pdf
+< C:\Users\swaga\Desktop\corpus.pdf
 --LectureBoundary--
 
 
@@ -153,7 +153,7 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-    "message": "What is Natural Language Processing?"
+    "message": "What is a Disaster?"
 }
 
 

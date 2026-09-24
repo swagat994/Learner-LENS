@@ -181,6 +181,7 @@ class LectureService:
         updated_lecture["id"] = str(
             updated_lecture["_id"]
         )
+
         del updated_lecture["_id"]
 
         return updated_lecture
